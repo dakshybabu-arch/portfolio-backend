@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { 
   Mail, 
   ExternalLink, 
@@ -10,98 +10,94 @@ import {
   Layout, 
   Server,
   ChevronRight,
-  X,
-  FileCode,
-  FolderOpen
+  Menu,
+  ArrowUp,
+  Star,
+  GitFork,
+  Eye,
+  LoaderCircle
 } from "lucide-react";
 
 export default function Home() {
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
-  const [showOnlyRealProjects, setShowOnlyRealProjects] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [githubProjects, setGithubProjects] = useState<any[]>([]);
+  const [loadingGithub, setLoadingGithub] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [contactError, setContactError] = useState('');
+  
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  const projects = [
-    {
-      id: 1,
-      title: "FitZone Gym Landing Page",
-      description: "Modern landing page for local gym with membership pricing and class schedules",
-      tech: ["React", "Tailwind CSS", "Framer Motion"],
-      color: "from-orange-500 to-red-500",
-      featured: true,
-      realProject: true,
-      files: [
-        { name: "components/Hero.tsx", content: "export const Hero = () => {\n  return <section className='hero'>Join FitZone Today</section>;\n}" },
-        { name: "components/Pricing.tsx", content: "export const Pricing = () => {\n  return <div className='pricing-cards'>Membership Plans</div>;\n}" },
-        { name: "components/Classes.tsx", content: "export const Classes = () => {\n  return <div className='class-schedule'>Weekly Classes</div>;\n}" }
-      ]
-    },
-    {
-      id: 2,
-      title: "Dr. Smith Medical Clinic",
-      description: "Professional medical clinic website with appointment booking and services overview",
-      tech: ["Next.js", "Tailwind CSS", "React Hook Form"],
-      color: "from-blue-500 to-cyan-500",
-      featured: true,
-      realProject: true,
-      files: [
-        { name: "app/page.tsx", content: "export default function Home() {\n  return <ClinicLanding />;\n}" },
-        { name: "components/Booking.tsx", content: "export const BookingForm = () => {\n  return <form>Book Appointment</form>;\n}" },
-        { name: "components/Services.tsx", content: "export const Services = () => {\n  return <div>Medical Services</div>;\n}" }
-      ]
-    },
-    {
-      id: 3,
-      title: "FreshBite Restaurant",
-      description: "Restaurant landing page with menu display and online reservation system",
-      tech: ["React", "CSS Modules", "Framer Motion"],
-      color: "from-green-500 to-emerald-500",
-      featured: true,
-      realProject: true,
-      files: [
-        { name: "components/Menu.tsx", content: "export const Menu = () => {\n  return <div className='menu-grid'>Our Menu</div>;\n}" },
-        { name: "components/Reservation.tsx", content: "export const Reservation = () => {\n  return <form>Table Reservation</form>;\n}" }
-      ]
-    },
-    {
-      id: 4,
-      title: "EduLearn Academy",
-      description: "Educational institution website with course listings and enrollment forms",
-      tech: ["Next.js", "Tailwind CSS", "React Query"],
-      color: "from-purple-500 to-pink-500",
-      featured: true,
-      realProject: true,
-      files: [
-        { name: "app/courses/page.tsx", content: "export default function Courses() {\n  return <CourseGrid />;\n}" },
-        { name: "components/Enrollment.tsx", content: "export const EnrollmentForm = () => {\n  return <form>Enroll Now</form>;\n}" }
-      ]
-    },
-    {
-      id: 5,
-      title: "AutoCare Service Center",
-      description: "Automotive service center website with service booking and testimonials",
-      tech: ["React", "Styled Components", "Framer Motion"],
-      color: "from-yellow-500 to-orange-500",
-      featured: true,
-      realProject: true,
-      files: [
-        { name: "components/Services.tsx", content: "export const AutoServices = () => {\n  return <div>Car Services</div>;\n}" },
-        { name: "components/Testimonials.tsx", content: "export const Reviews = () => {\n  return <div>Customer Reviews</div>;\n}" }
-      ]
-    },
-    {
-      id: 6,
-      title: "BeautySalon Studio",
-      description: "Beauty salon website with service menu and appointment scheduling",
-      tech: ["Next.js", "Tailwind CSS", "React Datepicker"],
-      color: "from-pink-500 to-rose-500",
-      featured: true,
-      realProject: true,
-      files: [
-        { name: "components/Services.tsx", content: "export const BeautyServices = () => {\n  return <div>Salon Services</div>;\n}" },
-        { name: "components/Appointment.tsx", content: "export const Appointment = () => {\n  return <form>Book Appointment</form>;\n}" }
-      ]
+  // Handle scroll to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 500);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const fetchGithubProjects = async () => {
+    setLoadingGithub(true);
+    try {
+      const response = await fetch('https://api.github.com/users/dakshybabu-arch/repos?sort=updated&per_page=10');
+      const data = await response.json();
+      setGithubProjects(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching GitHub projects:', error);
+      setGithubProjects([]);
+    } finally {
+      setLoadingGithub(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchGithubProjects();
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePosition({
+      x: (e.clientX / window.innerWidth) * 10,
+      y: (e.clientY / window.innerHeight) * 10
+    });
+  };
+
+  const submitContactForm = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setContactStatus('sending');
+    setContactError('');
+
+    try {
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactForm),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Unable to send your message.');
+      }
+
+      setContactForm({ name: '', email: '', message: '' });
+      setContactStatus('success');
+    } catch (error) {
+      setContactError(error instanceof Error ? error.message : 'Unable to send your message.');
+      setContactStatus('error');
+    }
+  };
+
 
   const skills = [
     { category: "Frontend", items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"], icon: Layout },
@@ -110,111 +106,199 @@ export default function Home() {
     { category: "Forms", items: ["React Hook Form", "Form Validation", "Email Integration", "Booking Systems"], icon: Database }
   ];
 
-  const experiences = [
-    {
-      role: "Frontend Developer",
-      company: "Freelance",
-      period: "2022 - Present",
-      description: "Building landing pages and websites for local businesses including gyms, medical clinics, restaurants, and educational institutions"
-    },
-    {
-      role: "Web Developer",
-      company: "Digital Agency",
-      period: "2020 - 2022",
-      description: "Created responsive websites and landing pages for various clients using React and modern CSS frameworks"
-    },
-    {
-      role: "Junior Developer",
-      company: "StartUp Studio",
-      period: "2018 - 2020",
-      description: "Developed frontend components and learned modern web development practices"
-    }
-  ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-pink-900/20" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center z-10 max-w-4xl"
-        >
+    <div className="min-h-screen bg-black text-white" onMouseMove={handleMouseMove}>
+      {/* Mobile Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-nav">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
+            <motion.span 
+              className="text-xl font-bold gradient-text"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              DYB
+            </motion.span>
+            <motion.button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Menu size={24} />
+            </motion.button>
+          </div>
+        </div>
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-6"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="border-t border-white/10"
           >
-            <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1">
-              <div className="w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center">
-                <span className="text-4xl font-bold gradient-text">DYB</span>
-              </div>
+            <div className="px-4 py-4 space-y-3">
+              <motion.a
+                href="#projects"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                Projects
+              </motion.a>
+              <motion.a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                Contact
+              </motion.a>
+              <motion.a
+                href="https://github.com/dakshybabu-arch"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                GitHub
+              </motion.a>
+              <motion.a
+                href="#"
+                className="block px-4 py-2 rounded-lg hover:bg-white/10 transition-colors"
+                whileHover={{ x: 5 }}
+              >
+                LinkedIn
+              </motion.a>
             </div>
           </motion.div>
+        )}
+      </nav>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0 }}
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 p-3 glass-button rounded-full shadow-lg"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <ArrowUp size={24} />
+        </motion.button>
+      )}
+
+      {/* Hero Section */}
+      <section ref={heroRef} className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <motion.div 
+          style={{ y: y1 }}
+          className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl"
+        />
+        <motion.div 
+          style={{ y: y2 }}
+          className="absolute bottom-20 right-10 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"
+        />
+        <motion.div 
+          animate={{ 
+            x: [0, 100, 0],
+            y: [0, -100, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl"
+        />
+        
+        <motion.div 
+          style={{ opacity }}
+          className="text-center z-10 max-w-4xl px-4"
+        >
+
           
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-5xl md:text-7xl font-bold mb-4"
+            transition={{ delay: 0.4, duration: 0.8, type: "spring" }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4"
+            style={{
+              textShadow: `0 0 ${mousePosition.x}px rgba(59, 130, 246, 0.5), 0 0 ${mousePosition.y}px rgba(37, 99, 235, 0.5)`
+            }}
           >
             Hi, I'm{" "}
-            <span className="gradient-text">Daksh Y Babau</span>
+            <span className="gradient-text">Daksh Y Babu</span>
           </motion.h1>
           
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="text-xl md:text-2xl text-gray-400 mb-8"
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="text-lg sm:text-xl md:text-2xl text-gray-400 mb-8 px-2"
           >
             Frontend Developer specializing in landing pages for entrepreneurs
           </motion.p>
           
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="flex gap-4 justify-center"
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <a
+            <motion.a
               href="#projects"
-              className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full font-semibold hover:opacity-90 transition-opacity"
+              className="px-8 py-3 glass-button rounded-full font-semibold text-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               View Projects
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href="#contact"
-              className="px-8 py-3 border border-white/20 rounded-full font-semibold hover:bg-white/10 transition-colors"
+              className="px-8 py-3 glass-card rounded-full font-semibold text-center"
+              whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.15)" }}
+              whileTap={{ scale: 0.95 }}
             >
               Contact Me
-            </a>
+            </motion.a>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="flex gap-6 justify-center mt-12"
+            transition={{ delay: 1, duration: 0.8 }}
+            className="flex gap-4 sm:gap-6 justify-center mt-8 sm:mt-12"
           >
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              GitHub
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              LinkedIn
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              <Mail size={24} />
-            </a>
+            <motion.a 
+              href="https://github.com/dakshybabu-arch" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+              whileHover={{ scale: 1.1, color: "#fff" }}
+            >
+              <span className="text-sm sm:text-base">GitHub</span>
+            </motion.a>
+            <motion.a 
+              href="#" 
+              className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+              whileHover={{ scale: 1.1, color: "#fff" }}
+            >
+              <span className="text-sm sm:text-base">LinkedIn</span>
+            </motion.a>
+            <motion.a 
+              href="mailto:contact@dakshybabu.com" 
+              className="text-gray-400 hover:text-white transition-colors"
+              whileHover={{ scale: 1.1, color: "#fff" }}
+            >
+              <Mail size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.a>
           </motion.div>
         </motion.div>
 
         <motion.div
           animate={{ y: [0, 20, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2"
         >
           <ChevronRight className="w-6 h-6 text-gray-400 rotate-90" />
@@ -222,14 +306,14 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-24 px-6">
+      <section id="projects" className="py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold mb-4 text-center"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center"
           >
             Featured <span className="gradient-text">Projects</span>
           </motion.h2>
@@ -239,181 +323,108 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-400 text-center mb-8 max-w-2xl mx-auto"
+            className="text-gray-400 text-center mb-8 max-w-2xl mx-auto px-4 text-sm sm:text-base"
           >
-            Explore my latest work and click on projects to view their code structure
+            Explore my latest work from GitHub
           </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex justify-center mb-12"
-          >
-            <button
-              onClick={() => setShowOnlyRealProjects(!showOnlyRealProjects)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all ${
-                showOnlyRealProjects
-                  ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-                  : "bg-white/10 text-gray-300 hover:bg-white/20"
-              }`}
+          {loadingGithub ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
             >
-              {showOnlyRealProjects ? "Showing My Real Projects" : "Show All Projects"}
-            </button>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.filter(project => showOnlyRealProjects ? project.realProject : true).map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                className="glass-card rounded-2xl p-6 cursor-pointer group"
-                onClick={() => setSelectedProject(project.id)}
-              >
-                <div className={`w-full h-48 rounded-xl bg-gradient-to-br ${project.color} mb-4 flex items-center justify-center`}>
-                  <Code size={48} className="text-white/80" />
-                </div>
-                
-                <h3 className="text-xl font-bold mb-2 group-hover:text-purple-400 transition-colors">
-                  {project.title}
-                </h3>
-                
-                <p className="text-gray-400 mb-4 text-sm">
-                  {project.description}
-                </p>
-                
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-3 py-1 bg-white/5 rounded-full text-xs text-gray-300"
+              <div className="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <p className="mt-4 text-gray-400">Loading projects from GitHub...</p>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {Array.isArray(githubProjects) && githubProjects.length > 0 ? (
+                githubProjects.map((repo, index) => (
+                <motion.a
+                  key={repo.id}
+                  href={repo.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  className="glass-card rounded-2xl p-6 cursor-pointer group block"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                      <Code size={24} className="text-white" />
+                    </div>
+                    <motion.div 
+                      className="flex gap-2"
+                      whileHover={{ scale: 1.1 }}
                     >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {project.realProject && (
-                  <div className="mt-4 flex items-center text-purple-400 text-sm">
-                    <FolderOpen size={16} className="mr-2" />
-                    Click to view files
+                      <div className="flex items-center gap-1 text-gray-400 text-sm">
+                        <Star size={14} className="text-yellow-500" />
+                        {repo.stargazers_count}
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-400 text-sm">
+                        <GitFork size={14} />
+                        {repo.forks_count}
+                      </div>
+                    </motion.div>
                   </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
+                  
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">
+                    {repo.name}
+                  </h3>
+                  
+                  <p className="text-gray-400 mb-4 text-sm line-clamp-2">
+                    {repo.description || "No description available"}
+                  </p>
+                  
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Eye size={14} />
+                      {repo.watchers_count}
+                    </div>
+                    <span>•</span>
+                    <span>{repo.language || "Unknown"}</span>
+                  </div>
+
+                  <div className="mt-4 flex items-center text-blue-400 text-sm">
+                    <ExternalLink size={16} className="mr-2" />
+                    View on GitHub
+                  </div>
+                </motion.a>
+              ))
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="col-span-full text-center py-12"
+                >
+                  <p className="text-gray-400">No projects found on GitHub.</p>
+                </motion.div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* File Viewer Modal */}
-      {selectedProject && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6"
-          onClick={() => {
-            setSelectedProject(null);
-            setSelectedFile(null);
-          }}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[#1a1a1a] rounded-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h3 className="text-xl font-bold">
-                {projects.find(p => p.id === selectedProject)?.title}
-              </h3>
-              <button
-                onClick={() => {
-                  setSelectedProject(null);
-                  setSelectedFile(null);
-                }}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
 
-            <div className="flex h-[calc(80vh-80px)]">
-              {/* File Tree */}
-              <div className="w-64 border-r border-white/10 p-4 overflow-y-auto">
-                <h4 className="text-sm font-semibold text-gray-400 mb-4">Project Files</h4>
-                <div className="space-y-2">
-                  {projects.find(p => p.id === selectedProject)?.files.map((file) => (
-                    <button
-                      key={file.name}
-                      onClick={() => setSelectedFile(file.name)}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center ${
-                        selectedFile === file.name
-                          ? "bg-purple-500/20 text-purple-400"
-                          : "hover:bg-white/5 text-gray-300"
-                      }`}
-                    >
-                      <FileCode size={16} className="mr-2" />
-                      {file.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* File Content */}
-              <div className="flex-1 p-6 overflow-y-auto">
-                {selectedFile ? (
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-gray-400">{selectedFile}</span>
-                      <a
-                        href="#"
-                        className="text-purple-400 hover:text-purple-300 text-sm flex items-center"
-                      >
-                        <ExternalLink size={14} className="mr-1" />
-                        Open in GitHub
-                      </a>
-                    </div>
-                    <pre className="bg-black/50 rounded-xl p-4 text-sm text灰色-300 overflow-x-auto">
-                      <code>
-                        {projects.find(p => p.id === selectedProject)?.files.find(f => f.name === selectedFile)?.content}
-                      </code>
-                    </pre>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-400">
-                    <div className="text-center">
-                      <FolderOpen size={48} className="mx-auto mb-4 opacity-50" />
-                      <p>Select a file to view its contents</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
 
       {/* Skills Section */}
-      <section className="py-24 px-6 bg-gradient-to-b from-transparent to-purple-900/10">
+      <section className="py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold mb-4 text-center"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center"
           >
             Skills & <span className="gradient-text">Expertise</span>
           </motion.h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-8 sm:mt-16">
             {skills.map((skill, index) => (
               <motion.div
                 key={skill.category}
@@ -421,20 +432,30 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, y: -5 }}
                 className="glass-card rounded-2xl p-6 group"
               >
-                <skill.icon size={32} className="text-purple-400 mb-4 group-hover:text-purple-300 transition-colors" />
+                <motion.div
+                  whileHover={{ rotate: 360, scale: 1.1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <skill.icon size={32} className="text-blue-400 mb-4" />
+                </motion.div>
                 <h3 className="text-xl font-bold mb-4">{skill.category}</h3>
                 <div className="space-y-2">
-                  {skill.items.map((item) => (
-                    <div
+                  {skill.items.map((item, i) => (
+                    <motion.div
                       key={item}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.1 + i * 0.05 }}
+                      whileHover={{ x: 5 }}
                       className="flex items-center text-gray-400 group-hover:text-gray-300 transition-colors"
                     >
-                      <ChevronRight size={14} className="mr-2 text-purple-400" />
+                      <ChevronRight size={14} className="mr-2 text-blue-400" />
                       {item}
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
@@ -443,51 +464,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Experience Section */}
-      <section className="py-24 px-6">
-        <div className="max-w-4xl mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold mb-16 text-center"
-          >
-            Work <span className="gradient-text">Experience</span>
-          </motion.h2>
-
-          <div className="space-y-8">
-            {experiences.map((exp, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="glass-card rounded-2xl p-6 relative"
-              >
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-pink-500 rounded-l-2xl" />
-                <div className="pl-6">
-                  <h3 className="text-xl font-bold mb-1">{exp.role}</h3>
-                  <p className="text-purple-400 mb-2">{exp.company}</p>
-                  <p className="text-gray-400 text-sm mb-4">{exp.period}</p>
-                  <p className="text-gray-300">{exp.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 px-6 bg-gradient-to-t from-transparent to-purple-900/10">
+      <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl font-bold mb-4 text-center"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-center"
           >
             Get in <span className="gradient-text">Touch</span>
           </motion.h2>
@@ -497,7 +483,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-400 text-center mb-16"
+            className="text-gray-400 text-center mb-12 sm:mb-16 px-4 text-sm sm:text-base"
           >
             Have a project in mind? Let's work together to bring your ideas to life.
           </motion.p>
@@ -507,36 +493,92 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6 glass-card rounded-2xl p-6 sm:p-8"
+            onSubmit={submitContactForm}
           >
             <div>
-              <input
+              <motion.input
                 type="text"
+                name="name"
                 placeholder="Your Name"
-                className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                value={contactForm.name}
+                onChange={(event) => setContactForm({ ...contactForm, name: event.target.value })}
+                required
+                maxLength={120}
+                disabled={contactStatus === 'sending'}
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 glass-input rounded-xl text-sm sm:text-base"
+                whileFocus={{ scale: 1.02 }}
               />
             </div>
             <div>
-              <input
+              <motion.input
                 type="email"
+                name="email"
                 placeholder="Your Email"
-                className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 transition-colors"
+                value={contactForm.email}
+                onChange={(event) => setContactForm({ ...contactForm, email: event.target.value })}
+                required
+                maxLength={254}
+                disabled={contactStatus === 'sending'}
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 glass-input rounded-xl text-sm sm:text-base"
+                whileFocus={{ scale: 1.02 }}
               />
             </div>
             <div>
-              <textarea
+              <motion.textarea
                 placeholder="Your Message"
+                name="message"
+                value={contactForm.message}
+                onChange={(event) => setContactForm({ ...contactForm, message: event.target.value })}
+                required
+                maxLength={5000}
+                disabled={contactStatus === 'sending'}
                 rows={5}
-                className="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 transition-colors resize-none"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 glass-input rounded-xl resize-none text-sm sm:text-base"
+                whileFocus={{ scale: 1.02 }}
               />
             </div>
             <motion.button
+              type="submit"
+              disabled={contactStatus === 'sending'}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+              className="w-full py-3 sm:py-4 glass-button rounded-xl font-semibold text-sm sm:text-base disabled:cursor-not-allowed disabled:opacity-60"
+              aria-busy={contactStatus === 'sending'}
             >
-              Send Message
+              <span className="flex items-center justify-center gap-2">
+                {contactStatus === 'sending' && (
+                  <motion.span
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                    aria-hidden="true"
+                  >
+                    <LoaderCircle size={18} />
+                  </motion.span>
+                )}
+                {contactStatus === 'sending' ? 'Sending message...' : 'Send Message'}
+              </span>
             </motion.button>
+            {contactStatus === 'sending' && (
+              <motion.p
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center text-sm text-blue-300"
+                role="status"
+              >
+                Your message is on its way…
+              </motion.p>
+            )}
+            {contactStatus === 'success' && (
+              <p className="text-center text-sm text-green-400" role="status">
+                Thanks! Your message has been sent.
+              </p>
+            )}
+            {contactStatus === 'error' && (
+              <p className="text-center text-sm text-red-400" role="alert">
+                {contactError}
+              </p>
+            )}
           </motion.form>
 
           <motion.div
@@ -544,25 +586,39 @@ export default function Home() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex gap-6 justify-center mt-12"
+            className="flex gap-4 sm:gap-6 justify-center mt-8 sm:mt-12"
           >
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              GitHub
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              LinkedIn
-            </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
-              <Mail size={24} />
-            </a>
+            <motion.a 
+              href="https://github.com/dakshybabu-arch" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+              whileHover={{ scale: 1.1, y: -2 }}
+            >
+              <span className="text-sm sm:text-base">GitHub</span>
+            </motion.a>
+            <motion.a 
+              href="#" 
+              className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+              whileHover={{ scale: 1.1, y: -2 }}
+            >
+              <span className="text-sm sm:text-base">LinkedIn</span>
+            </motion.a>
+            <motion.a 
+              href="mailto:contact@dakshybabu.com" 
+              className="text-gray-400 hover:text-white transition-colors"
+              whileHover={{ scale: 1.1, y: -2 }}
+            >
+              <Mail size={24} className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.a>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-white/10">
-        <div className="max-w-7xl mx-auto text-center text-gray-400">
-          <p>© 2024 Daksh Y Babau. All rights reserved.</p>
+      <footer className="py-6 sm:py-8 px-4 sm:px-6 border-t border-white/10">
+        <div className="max-w-7xl mx-auto text-center text-gray-400 text-sm sm:text-base">
+          <p>© 2024 Daksh Y Babu. All rights reserved.</p>
         </div>
       </footer>
     </div>

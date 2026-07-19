@@ -2,6 +2,10 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter
 const createTransporter = () => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    throw new Error('EMAIL_USER and EMAIL_PASS must be configured');
+  }
+
   return nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -17,7 +21,8 @@ const sendEmail = async (options) => {
     const transporter = createTransporter();
     
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      replyTo: options.replyTo,
       to: options.to,
       subject: options.subject,
       text: options.text,
