@@ -13,8 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Daksh Y Babau | Portfolio",
-  description: "Premium portfolio of Daksh Y Babau - Full Stack Developer",
+  title: "Daksh Y Babu | Portfolio",
+  description: "Premium portfolio of Daksh Y Babu - Student Developer",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
