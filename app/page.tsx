@@ -113,33 +113,48 @@ export default function Home() {
     "AI Tools", "React", "Tailwind CSS", "Modern Web Development", "Responsive Web Design", "UI Design"
   ];
 
-  const [projects, setProjects] = useState<Array<any>>([]);
-
-  useEffect(() => {
-    const fetchRepos = async () => {
-      try {
-        const res = await fetch('https://api.github.com/users/dakshybabu-arch/repos?per_page=100');
-        if (!res.ok) {
-          console.error('GitHub API error', res.status);
-          return;
-        }
-        const data = await res.json();
-        const mapped = data.map((r: any, idx: number) => ({
-          id: r.id || idx,
-          name: r.name,
-          description: r.description || 'No description provided.',
-          technologies: r.language ? [r.language] : [],
-          link: r.homepage || '#',
-          github: r.html_url
-        }));
-        setProjects(mapped);
-      } catch (error) {
-        console.error('Failed to load GitHub repos', error);
-      }
-    };
-
-    fetchRepos();
-  }, []);
+  const projects = [
+    {
+      id: 1,
+      name: "Study Management System",
+      description: "A comprehensive platform to manage study schedules, tasks, and track progress efficiently.",
+      technologies: ["React", "Tailwind CSS"],
+      link: "#",
+      github: "https://github.com/dakshybabu-arch"
+    },
+    {
+      id: 2,
+      name: "Solar Company Website",
+      description: "A modern, responsive landing page for a solar energy provider featuring service details and contact forms.",
+      technologies: ["HTML", "CSS", "JavaScript"],
+      link: "#",
+      github: "https://github.com/dakshybabu-arch"
+    },
+    {
+      id: 3,
+      name: "Tours & Travels Website",
+      description: "An engaging travel booking platform with destination showcases and beautiful UI animations.",
+      technologies: ["React", "Framer Motion"],
+      link: "#",
+      github: "https://github.com/dakshybabu-arch"
+    },
+    {
+      id: 4,
+      name: "Portfolio Website",
+      description: "My personal developer portfolio built with modern web technologies showcasing my journey and projects.",
+      technologies: ["Next.js", "Tailwind CSS"],
+      link: "#",
+      github: "https://github.com/dakshybabu-arch"
+    },
+    {
+      id: 5,
+      name: "Landing Pages",
+      description: "Various high-converting landing pages built for different business requirements and niches.",
+      technologies: ["HTML", "Tailwind CSS"],
+      link: "#",
+      github: "https://github.com/dakshybabu-arch"
+    }
+  ];
 
   const services = [
     { title: "Portfolio Websites", description: "Personal brands and portfolios that stand out with modern design." },
