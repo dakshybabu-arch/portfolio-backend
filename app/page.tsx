@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
+import emailjs from '@emailjs/browser';
 import { 
   Mail, 
   ExternalLink, 
@@ -29,7 +30,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [contactError, setContactError] = useState('');
   
@@ -59,25 +60,44 @@ export default function Home() {
     });
   };
 
-  const submitContactForm = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submitContactForm = async (event?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+    if (event) event.preventDefault();
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactForm.email)) {
+      setContactError('Please enter a valid email address.');
+      setContactStatus('error');
+      return;
+    }
+
     setContactStatus('sending');
     setContactError('');
 
     try {
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactForm),
-      });
-      const result = await response.json();
+      const result = await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+        {
+          from_name: contactForm.name,
+          reply_to: contactForm.email,
+          subject: contactForm.subject,
+          message: contactForm.message,
+        },
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ''
+      );
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Unable to send your message.');
+      if (result.status !== 200) {
+        throw new Error('Failed to send message.');
       }
 
-      setContactForm({ name: '', email: '', message: '' });
+      setContactForm({ name: '', email: '', subject: '', message: '' });
       setContactStatus('success');
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => {
+        setContactStatus('idle');
+      }, 5000);
     } catch (error) {
       setContactError(error instanceof Error ? error.message : 'Unable to send your message.');
       setContactStatus('error');
@@ -311,7 +331,7 @@ export default function Home() {
               <span className="text-sm sm:text-base font-medium">GitHub</span>
             </motion.a>
             <motion.a 
-              href="mailto:contact@dakshybabu.com" 
+              href="mailto:dakshybabu@gmail.com" 
               className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
               whileHover={{ scale: 1.1, color: "#60a5fa" }}
             >
@@ -694,6 +714,21 @@ export default function Home() {
               </div>
             </div>
             <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2 ml-1">Subject</label>
+              <motion.input
+                type="text"
+                name="subject"
+                placeholder="Project Inquiry"
+                value={contactForm.subject}
+                onChange={(event) => setContactForm({ ...contactForm, subject: event.target.value })}
+                required
+                maxLength={200}
+                disabled={contactStatus === 'sending'}
+                className="w-full px-6 py-4 glass-input rounded-2xl text-base focus:ring-2 focus:ring-blue-500/50"
+                whileFocus={{ scale: 1.01 }}
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-400 mb-2 ml-1">Message</label>
               <motion.textarea
                 placeholder="How can I help you?"
@@ -729,19 +764,55 @@ export default function Home() {
                 {contactStatus === 'sending' ? 'Sending message...' : 'Send Message'}
               </span>
             </motion.button>
-            {contactStatus === 'success' && (
-              <p className="text-center text-green-400 font-medium" role="status">
-                Thanks! Your message has been sent successfully.
-              </p>
-            )}
-            {contactStatus === 'error' && (
-              <p className="text-center text-red-400 font-medium" role="alert">
-                {contactError}
-              </p>
-            )}
           </motion.form>
         </div>
       </section>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {(contactStatus === 'success' || contactStatus === 'error') && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-6 py-4 rounded-2xl glass-modal border flex items-center gap-3 shadow-2xl ${
+              contactStatus === 'success' ? 'border-green-500/30' : 'border-red-500/30'
+            }`}
+          >
+            {contactStatus === 'success' ? (
+              <>
+                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <p className="text-gray-200 font-medium">Message sent successfully! I'll get back to you soon.</p>
+              </>
+            ) : (
+              <>
+                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-gray-200 font-medium">Failed to send message.</p>
+                  <button 
+                    type="button"
+                    onClick={(e) => submitContactForm(e as any)} 
+                    className="text-sm text-red-400 hover:text-red-300 text-left mt-1 underline"
+                  >
+                    Click to retry
+                  </button>
+                </div>
+              </>
+            )}
+            <button 
+              type="button"
+              onClick={() => setContactStatus('idle')}
+              className="ml-4 text-gray-500 hover:text-gray-300"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
       <footer className="py-8 px-4 sm:px-6 border-t border-white/10 bg-black">
@@ -753,7 +824,7 @@ export default function Home() {
             <a href="https://github.com/dakshybabu-arch" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors">
               <GitFork size={20} />
             </a>
-            <a href="mailto:contact@dakshybabu.com" className="text-gray-500 hover:text-blue-400 transition-colors">
+            <a href="mailto:dakshybabu@gmail.com" className="text-gray-500 hover:text-blue-400 transition-colors">
               <Mail size={20} />
             </a>
           </div>
