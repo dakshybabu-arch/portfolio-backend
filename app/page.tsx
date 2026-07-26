@@ -116,43 +116,27 @@ export default function Home() {
   const projects = [
     {
       id: 1,
-      name: "Study Management System",
-      description: "A comprehensive platform to manage study schedules, tasks, and track progress efficiently.",
-      technologies: ["React", "Tailwind CSS"],
-      link: "#",
-      github: "https://github.com/dakshybabu-arch"
+      name: "Travels Website Frontend",
+      description: "A sample frontend for a travels website featuring destination showcases and a clean, responsive UI.",
+      technologies: ["TypeScript", "Next.js"],
+      link: "https://frontend-of-sample-websit.vercel.app",
+      github: "https://github.com/dakshybabu-arch/frontend-of-sample-websit"
     },
     {
       id: 2,
-      name: "Solar Company Website",
-      description: "A modern, responsive landing page for a solar energy provider featuring service details and contact forms.",
-      technologies: ["HTML", "CSS", "JavaScript"],
-      link: "#",
-      github: "https://github.com/dakshybabu-arch"
+      name: "Portfolio Backend API",
+      description: "A backend API powering my portfolio, built with Express.js and MongoDB for data storage and management.",
+      technologies: ["TypeScript", "Express.js", "MongoDB"],
+      link: "https://your-protfolio-daksh.vercel.app",
+      github: "https://github.com/dakshybabu-arch/portfolio-backend"
     },
     {
       id: 3,
-      name: "Tours & Travels Website",
-      description: "An engaging travel booking platform with destination showcases and beautiful UI animations.",
-      technologies: ["React", "Framer Motion"],
-      link: "#",
-      github: "https://github.com/dakshybabu-arch"
-    },
-    {
-      id: 4,
       name: "Portfolio Website",
-      description: "My personal developer portfolio built with modern web technologies showcasing my journey and projects.",
-      technologies: ["Next.js", "Tailwind CSS"],
-      link: "#",
-      github: "https://github.com/dakshybabu-arch"
-    },
-    {
-      id: 5,
-      name: "Landing Pages",
-      description: "Various high-converting landing pages built for different business requirements and niches.",
-      technologies: ["HTML", "Tailwind CSS"],
-      link: "#",
-      github: "https://github.com/dakshybabu-arch"
+      description: "My personal developer portfolio built with Next.js and Framer Motion, showcasing my journey and projects.",
+      technologies: ["Next.js", "TypeScript", "Framer Motion"],
+      link: "https://your-protfolio-daksh.vercel.app",
+      github: "https://github.com/dakshybabu-arch/protfolio"
     }
   ];
 
@@ -539,7 +523,7 @@ export default function Home() {
                   <p className="text-gray-400 mb-6 leading-relaxed">
                     {project.description}
                   </p>
-                  
+      
                   <div className="flex flex-wrap gap-2 mb-8">
                     {project.technologies.map(tech => (
                       <span key={tech} className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 text-gray-300 border border-white/10">
