@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Daksh Y Babu | Portfolio",
   description: "Premium portfolio of Daksh Y Babu - Student Developer",
+  verification: {
+    google: "aUFwfP4iQ96j5BOvQsJugkY3-chBFmCaFUOYKkT-3CU",
+  },
 };
 
 export const viewport = {
