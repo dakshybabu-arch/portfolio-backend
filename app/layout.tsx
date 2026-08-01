@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   description: "Premium portfolio of Daksh Y Babu - Student Developer",
   other: {
     "google-site-verification": "aUFwfP4iQ96j5BOvQsJugkY3-chBFmCaFUOYKkT-3CU",
+    "msvalidate.01": "0570F710230A914D333A1AB0A2AB9D88",
   },
 };
 
