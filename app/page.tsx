@@ -144,7 +144,7 @@ export default function Home() {
       description: "A sample website showcasing rice products with a modern, responsive design.",
       technologies: ["HTML", "CSS", "JavaScript"],
       link: "#",
-      github: "https://github.com/daksh-arch/rice"
+      github: "https://github.com/dakshybabu-arch/rice-sample-website"
     }
   ];
 
