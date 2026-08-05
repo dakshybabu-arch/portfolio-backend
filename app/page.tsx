@@ -137,6 +137,14 @@ export default function Home() {
       technologies: ["Next.js", "TypeScript", "Framer Motion"],
       link: "https://your-protfolio-daksh.vercel.app",
       github: "https://github.com/dakshybabu-arch/protfolio"
+    },
+    {
+      id: 4,
+      name: "Rice Sample Website",
+      description: "A sample website showcasing rice products with a modern, responsive design.",
+      technologies: ["HTML", "CSS", "JavaScript"],
+      link: "#",
+      github: "https://github.com/daksh-arch/rice"
     }
   ];
 
