@@ -140,11 +140,11 @@ export default function Home() {
     },
     {
       id: 4,
-      name: "Rice Sample Website",
-      description: "A sample website showcasing rice products with a modern, responsive design.",
+      name: "Rice Sample Project",
+      description: "A polished sample project showcasing rice products with a modern, responsive layout and clean product presentation.",
       technologies: ["HTML", "CSS", "JavaScript"],
-      link: "#",
-      github: "https://github.com/dakshybabu-arch/rice-sample-website"
+      link: "https://github.com/dakshybabu-arch/rice-sample-project",
+      github: "https://github.com/dakshybabu-arch/rice-sample-project"
     }
   ];
 
@@ -269,8 +269,8 @@ export default function Home() {
               textShadow: `0 0 ${mousePosition.x}px rgba(59, 130, 246, 0.3), 0 0 ${mousePosition.y}px rgba(37, 99, 235, 0.3)`
             }}
           >
-            Building Modern <br className="hidden sm:block" />
-            <span className="gradient-text">Web Experiences.</span>
+            Frontend Developer <br className="hidden sm:block" />
+            <span className="gradient-text">& Website Developer.</span>
           </motion.h1>
           
           <motion.p
@@ -279,7 +279,7 @@ export default function Home() {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-lg sm:text-xl text-gray-400 mb-10 px-2 leading-relaxed max-w-3xl mx-auto"
           >
-            I'm a Class 12 Commerce student passionate about creating beautiful, fast, and responsive websites. I enjoy learning new technologies, building real-world projects, and continuously improving my skills.
+            I'm a frontend developer and website developer passionate about creating beautiful, fast, and responsive websites. As a self-taught web developer from Kerala, India, I build modern web experiences using React, Next.js, and TypeScript.
           </motion.p>
           
           <motion.div
@@ -367,10 +367,10 @@ export default function Home() {
               className="glass-card p-8 rounded-3xl"
             >
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                I am a passionate student from Kerala, India, currently pursuing my Class 12 Commerce studies. Outside of academics, my true passion lies in the world of web development.
+                I am a passionate frontend developer and website developer from Kerala, India, currently pursuing my Class 12 Commerce studies. Outside of academics, my true passion lies in frontend web development and building modern websites.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed">
-                As a self-taught frontend web developer, I spend my time exploring modern technologies, building responsive user interfaces, and striving to become a future full stack developer. I believe in learning by doing and constantly pushing my boundaries.
+                As a self-taught frontend developer, I spend my time exploring modern technologies like React, Next.js, and TypeScript, building responsive user interfaces, and delivering high-quality website development. I believe in learning by doing and constantly pushing my boundaries as a web developer.
               </p>
             </motion.div>
             
@@ -469,7 +469,7 @@ export default function Home() {
               </h3>
               <div className="glass-card rounded-3xl p-8 sm:p-10 border-indigo-500/20">
                 <p className="text-gray-300 text-lg leading-relaxed mb-8">
-                  I'm currently learning how to use AI tools to build better websites and improve my frontend development skills. My focus is on creating responsive, modern, and user-friendly web applications while continuously improving my coding knowledge.
+                  I'm continuously growing as a frontend developer and website developer, learning how to use AI tools to build better websites. My focus is on creating responsive, modern, and user-friendly web applications while strengthening my frontend development and website development skills.
                 </p>
                 
                 <div className="flex flex-wrap gap-3">
@@ -661,7 +661,7 @@ export default function Home() {
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full mb-6"></div>
             <p className="text-gray-400 text-lg">
-              Have a project in mind or just want to say hi? Let's connect!
+              Looking for a frontend developer or website developer? Have a project in mind or just want to say hi? Let's connect!
             </p>
           </motion.div>
 
