@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="background" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f172a" />
+      <stop offset="1" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="monogram" x1="17" y1="17" x2="48" y2="47" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e8f9" />
+      <stop offset=".55" stop-color="#60a5fa" />
+      <stop offset="1" stop-color="#818cf8" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#background)" />
+  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#334155" stroke-width="2" />
+  <path d="M10 15h9c8.7 0 13.5 6.2 13.5 17S27.7 49 19 49h-9V15Zm8.7 7.1h-1.6v19.8h1.6c5 0 7.6-3.4 7.6-9.9s-2.6-9.9-7.6-9.9Z" fill="url(#monogram)" />
+  <path d="M33 15h9.5c7.4 0 11.5 3.2 11.5 8.7 0 3.3-1.6 5.5-4.5 6.4 3.7.8 5.8 3.7 5.8 8.3C55.3 44.5 50.7 49 43 49H33V15Zm7 6.5v6.2h2c3.4 0 5-1 5-3.2s-1.6-3-5-3h-2Zm0 12.4v7.6h2.7c3.5 0 5.3-1.2 5.3-3.8s-1.8-3.8-5.3-3.8H40Z" fill="#f8fafc" />
+</svg>

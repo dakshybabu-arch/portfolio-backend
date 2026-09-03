@@ -105,12 +105,42 @@ export default function Home() {
   };
 
   const skills = [
-    { category: "Frontend", items: ["HTML", "CSS", "JavaScript", "React", "Tailwind CSS"], icon: Layout },
-    { category: "Tools", items: ["VS Code", "GitHub", "Vercel"], icon: Terminal }
+    {
+      category: "Frontend Development",
+      gradient: "from-blue-500 to-cyan-400",
+      borderGlow: "border-blue-500/30 hover:border-blue-400/60 hover:shadow-blue-500/20",
+      iconBg: "bg-gradient-to-br from-blue-500/20 to-cyan-500/20 text-cyan-400",
+      dotColor: "bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]",
+      icon: Layout,
+      items: ["React", "Next.js", "TypeScript", "JavaScript (ES6+)", "Tailwind CSS", "HTML5 & CSS3"]
+    },
+    {
+      category: "Database & Backend",
+      gradient: "from-emerald-400 to-teal-400",
+      borderGlow: "border-emerald-500/30 hover:border-emerald-400/60 hover:shadow-emerald-500/20",
+      iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400",
+      dotColor: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]",
+      icon: Database,
+      items: ["MongoDB", "Mongoose ODM", "Node.js", "Express.js", "REST APIs", "CRUD Architecture"]
+    },
+    {
+      category: "Tools & Workflow",
+      gradient: "from-purple-500 to-pink-500",
+      borderGlow: "border-purple-500/30 hover:border-purple-400/60 hover:shadow-purple-500/20",
+      iconBg: "bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-purple-400",
+      dotColor: "bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.8)]",
+      icon: Terminal,
+      items: ["VS Code", "Git & GitHub", "Vercel", "Postman", "npm / Bun", "Figma"]
+    }
   ];
 
   const learningBadges = [
-    "AI Tools", "React", "Tailwind CSS", "Modern Web Development", "Responsive Web Design", "UI Design"
+    { label: "MongoDB & Database Systems", bg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:border-emerald-400" },
+    { label: "Next.js 15 & App Router", bg: "bg-blue-500/10 border-blue-500/30 text-blue-300 hover:border-blue-400" },
+    { label: "AI Tools & Automation", bg: "bg-purple-500/10 border-purple-500/30 text-purple-300 hover:border-purple-400" },
+    { label: "Full Stack Web Apps", bg: "bg-teal-500/10 border-teal-500/30 text-teal-300 hover:border-teal-400" },
+    { label: "Modern Web Architecture", bg: "bg-indigo-500/10 border-indigo-500/30 text-indigo-300 hover:border-indigo-400" },
+    { label: "Responsive UI/UX Design", bg: "bg-pink-500/10 border-pink-500/30 text-pink-300 hover:border-pink-400" },
   ];
 
   const projects = [
@@ -118,15 +148,15 @@ export default function Home() {
       id: 1,
       name: "Travels Website Frontend",
       description: "A sample frontend for a travels website featuring destination showcases and a clean, responsive UI.",
-      technologies: ["TypeScript", "Next.js"],
+      technologies: ["TypeScript", "Next.js", "Tailwind CSS"],
       link: "https://frontend-of-sample-websit.vercel.app",
       github: "https://github.com/dakshybabu-arch/frontend-of-sample-websit"
     },
     {
       id: 2,
-      name: "Portfolio Backend API",
-      description: "A backend API powering my portfolio, built with Express.js and MongoDB for data storage and management.",
-      technologies: ["TypeScript", "Express.js", "MongoDB"],
+      name: "Portfolio Backend & Database API",
+      description: "A robust backend API powering portfolio features, built with Express.js and MongoDB for persistent data storage, contact handling, and CRUD operations.",
+      technologies: ["MongoDB", "Mongoose", "Express.js", "TypeScript", "Node.js"],
       link: "https://your-protfolio-daksh.vercel.app",
       github: "https://github.com/dakshybabu-arch/portfolio-backend"
     },
@@ -134,7 +164,7 @@ export default function Home() {
       id: 3,
       name: "Portfolio Website",
       description: "My personal developer portfolio built with Next.js and Framer Motion, showcasing my journey and projects.",
-      technologies: ["Next.js", "TypeScript", "Framer Motion"],
+      technologies: ["Next.js", "TypeScript", "Framer Motion", "Tailwind CSS"],
       link: "https://your-protfolio-daksh.vercel.app",
       github: "https://github.com/dakshybabu-arch/protfolio"
     },
@@ -142,7 +172,7 @@ export default function Home() {
       id: 4,
       name: "Rice Sample Project",
       description: "A polished sample project showcasing rice products with a modern, responsive layout and clean product presentation.",
-      technologies: ["HTML", "CSS", "JavaScript"],
+      technologies: ["HTML5", "CSS3", "JavaScript"],
       link: "https://github.com/dakshybabu-arch/rice-sample-project",
       github: "https://github.com/dakshybabu-arch/rice-sample-project"
     }
@@ -382,18 +412,22 @@ export default function Home() {
               className="grid grid-cols-1 sm:grid-cols-2 gap-4"
             >
               {[
-                { title: "Class 12 Commerce Student", icon: BookOpen },
-                { title: "Student Developer", icon: Code },
-                { title: "Passionate Learner", icon: Rocket },
-                { title: "Frontend Web Developer", icon: Layout },
-                { title: "Future Full Stack Developer", icon: Database }
+                { title: "Class 12 Commerce Student", icon: BookOpen, iconColor: "text-blue-400" },
+                { title: "Frontend & Web Developer", icon: Code, iconColor: "text-cyan-400" },
+                { title: "Passionate Learner", icon: Rocket, iconColor: "text-indigo-400" },
+                { title: "Modern UI/UX Designer", icon: Layout, iconColor: "text-purple-400" },
+                { title: "Full Stack & Database Explorer", icon: Database, iconColor: "text-emerald-400", isSpecial: true }
               ].map((item, idx) => (
                 <motion.div
                   key={idx}
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className={`glass-card p-6 rounded-2xl flex flex-col items-center justify-center text-center gap-3 ${idx === 4 ? 'sm:col-span-2' : ''}`}
+                  className={`glass-card p-6 rounded-2xl flex flex-col items-center justify-center text-center gap-3 transition-all duration-300 ${
+                    item.isSpecial
+                      ? 'sm:col-span-2 border-emerald-500/30 hover:border-emerald-400/60 hover:shadow-[0_0_25px_rgba(16,185,129,0.2)]'
+                      : ''
+                  }`}
                 >
-                  <item.icon className="w-8 h-8 text-blue-400" />
+                  <item.icon className={`w-8 h-8 ${item.iconColor}`} />
                   <span className="font-medium text-gray-200">{item.title}</span>
                 </motion.div>
               ))}
@@ -403,7 +437,7 @@ export default function Home() {
       </section>
 
       {/* Skills & Learning Section */}
-      <section id="skills" className="py-20 sm:py-32 px-4 sm:px-6 bg-black/50">
+      <section id="skills" className="py-20 sm:py-32 px-4 sm:px-6 bg-black/50 relative">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -413,79 +447,85 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-              Skills & <span className="gradient-text">Growth</span>
+              Skills & <span className="gradient-text">Technologies</span>
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
+            <div className="w-28 h-1 bg-gradient-to-r from-blue-500 via-emerald-400 to-purple-500 mx-auto rounded-full mb-4"></div>
+            <p className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg">
+              Specialized in modern frontend development, database-backed architectures, and developer tooling.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Current Skills */}
-            <div>
-              <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
-                <Code className="text-blue-400" /> Technologies I Know
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {skills.map((skill, index) => (
-                  <motion.div
-                    key={skill.category}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    whileHover={{ scale: 1.02 }}
-                    className="glass-card rounded-3xl p-8"
-                  >
-                    <skill.icon size={28} className="text-blue-400 mb-6" />
-                    <h4 className="text-xl font-bold mb-6">{skill.category}</h4>
-                    <div className="space-y-4">
-                      {skill.items.map((item, i) => (
-                        <motion.div
-                          key={item}
-                          initial={{ opacity: 0, x: -10 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.4, delay: index * 0.1 + i * 0.1 }}
-                          className="flex items-center text-gray-300 font-medium"
-                        >
-                          <div className="w-2 h-2 rounded-full bg-blue-500 mr-3"></div>
-                          {item}
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            {/* Currently Learning */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <h3 className="text-2xl font-semibold mb-8 flex items-center gap-3">
-                <Rocket className="text-indigo-400" /> Currently Learning
-              </h3>
-              <div className="glass-card rounded-3xl p-8 sm:p-10 border-indigo-500/20">
-                <p className="text-gray-300 text-lg leading-relaxed mb-8">
-                  I'm continuously growing as a frontend developer and website developer, learning how to use AI tools to build better websites. My focus is on creating responsive, modern, and user-friendly web applications while strengthening my frontend development and website development skills.
-                </p>
-                
-                <div className="flex flex-wrap gap-3">
-                  {learningBadges.map((badge, idx) => (
-                    <motion.span
-                      key={idx}
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      className="px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-sm font-medium"
+          {/* 3 Categories: Frontend, Database & Backend, Tools */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {skills.map((skill, index) => (
+              <motion.div
+                key={skill.category}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                whileHover={{ y: -6, scale: 1.02 }}
+                className={`glass-card rounded-3xl p-8 relative overflow-hidden transition-all duration-300 ${skill.borderGlow}`}
+              >
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${skill.gradient}`} />
+                <div className={`w-14 h-14 rounded-2xl ${skill.iconBg} flex items-center justify-center mb-6 shadow-lg`}>
+                  <skill.icon size={28} />
+                </div>
+                <h3 className="text-xl font-bold mb-6 text-white">{skill.category}</h3>
+                <div className="space-y-3">
+                  {skill.items.map((item, i) => (
+                    <motion.div
+                      key={item}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: index * 0.1 + i * 0.06 }}
+                      whileHover={{ x: 4 }}
+                      className="flex items-center text-gray-200 font-medium text-sm sm:text-base py-1.5 px-3 rounded-xl hover:bg-white/5 transition-colors"
                     >
-                      {badge}
-                    </motion.span>
+                      <div className={`w-2 h-2 rounded-full ${skill.dotColor} mr-3 flex-shrink-0`} />
+                      <span>{item}</span>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
+
+          {/* Currently Learning & Expansion */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="glass-card rounded-3xl p-8 sm:p-10 border-indigo-500/20 max-w-5xl mx-auto"
+          >
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-md">
+                <Rocket size={24} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-white">Continuous Growth & Expanding Horizons</h3>
+                <p className="text-sm text-gray-400">Mastering full-stack architecture, modern databases, and AI tooling</p>
+              </div>
+            </div>
+            
+            <p className="text-gray-300 text-base sm:text-lg leading-relaxed mb-8">
+              I'm continuously growing as a frontend and full-stack developer — integrating responsive React/Next.js interfaces with structured MongoDB database layers and REST APIs. I also actively leverage modern AI workflows to optimize code quality, performance, and SEO.
+            </p>
+            
+            <div className="flex flex-wrap gap-3">
+              {learningBadges.map((badge, idx) => (
+                <motion.span
+                  key={idx}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  className={`px-4 py-2 rounded-full border text-xs sm:text-sm font-medium transition-all ${badge.bg}`}
+                >
+                  {badge.label}
+                </motion.span>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -533,11 +573,23 @@ export default function Home() {
                   </p>
       
                   <div className="flex flex-wrap gap-2 mb-8">
-                    {project.technologies.map(tech => (
-                      <span key={tech} className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 text-gray-300 border border-white/10">
-                        {tech}
-                      </span>
-                    ))}
+                    {project.technologies.map(tech => {
+                      let techStyle = "bg-white/5 text-gray-300 border-white/10";
+                      if (tech === "MongoDB" || tech === "Mongoose") {
+                        techStyle = "bg-emerald-500/10 text-emerald-300 border-emerald-500/30";
+                      } else if (tech === "TypeScript" || tech === "Next.js" || tech === "React") {
+                        techStyle = "bg-blue-500/10 text-blue-300 border-blue-500/30";
+                      } else if (tech === "Express.js" || tech === "Node.js") {
+                        techStyle = "bg-teal-500/10 text-teal-300 border-teal-500/30";
+                      } else if (tech === "Framer Motion" || tech === "Tailwind CSS") {
+                        techStyle = "bg-purple-500/10 text-purple-300 border-purple-500/30";
+                      }
+                      return (
+                        <span key={tech} className={`text-xs font-medium px-3 py-1 rounded-full border ${techStyle}`}>
+                          {tech}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
                 
