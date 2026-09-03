@@ -171,10 +171,10 @@ export default function Home() {
     {
       id: 4,
       name: "Rice Sample Project",
-      description: "A polished sample project showcasing rice products with a modern, responsive layout and clean product presentation.",
+      description: "A polished sample website for a rice company featuring modern responsive layout, integrated maps, and direct contact options.",
       technologies: ["HTML5", "CSS3", "JavaScript"],
-      link: "https://github.com/dakshybabu-arch/rice-sample-project",
-      github: "https://github.com/dakshybabu-arch/rice-sample-project"
+      link: "https://github.com/dakshybabu-arch/rice-sample-website",
+      github: "https://github.com/dakshybabu-arch/rice-sample-website"
     }
   ];
 
