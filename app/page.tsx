@@ -173,7 +173,7 @@ export default function Home() {
       name: "Rice Sample Project",
       description: "A polished sample website for a rice company featuring modern responsive layout, integrated maps, and direct contact options.",
       technologies: ["HTML5", "CSS3", "JavaScript"],
-      link: "https://github.com/dakshybabu-arch/rice-sample-website",
+      link: "https://ricevista-exports.vercel.app/",
       github: "https://github.com/dakshybabu-arch/rice-sample-website"
     }
   ];
