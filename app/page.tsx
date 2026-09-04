@@ -596,6 +596,8 @@ export default function Home() {
                 <div className="px-8 py-5 border-t border-white/10 flex items-center justify-between bg-black/20">
                   <a 
                     href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm font-semibold text-white hover:text-blue-400 flex items-center gap-2 transition-colors"
                   >
                     Live Demo <ExternalLink size={14} />
